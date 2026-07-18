@@ -1,11 +1,13 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/*.js", "use": "@vercel/node" }
+    { "src": "api/*.js", "use": "@vercel/node" },
+    { "src": "public/**/*", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/drivers", "dest": "/api/drivers" },
     { "src": "/rides", "dest": "/api/rides" },
-    { "src": "/health", "dest": "/api/health" }
+    { "src": "/health", "dest": "/api/health" },
+    { "src": "/", "dest": "/index.html" }
   ]
 }
