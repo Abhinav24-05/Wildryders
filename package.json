@@ -1,0 +1,14 @@
+{
+  "name": "wildryde",
+  "version": "1.0.0",
+  "description": "A basic cab service API for Wildryde",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node src/app.js",
+    "test": "node --check src/app.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

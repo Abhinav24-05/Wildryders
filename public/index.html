@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wildryde Cab Service</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
+        color: white;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      .card {
+        background: rgba(255,255,255,0.12);
+        padding: 24px;
+        border-radius: 16px;
+        backdrop-filter: blur(8px);
+        margin-bottom: 20px;
+      }
+      button {
+        background: #fbbf24;
+        color: #111827;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      ul { padding-left: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <h1>Wildryde Cab Service</h1>
+        <p>Book a ride, view available drivers, and track live ride requests.</p>
+        <button onclick="loadData()">Refresh Dashboard</button>
+      </div>
+
+      <div class="card">
+        <h2>Drivers</h2>
+        <ul id="drivers-list"></ul>
+      </div>
+
+      <div class="card">
+        <h2>Recent Rides</h2>
+        <ul id="rides-list"></ul>
+      </div>
+    </div>
+
+    <script>
+      async function loadData() {
+        try {
+          const [driversRes, ridesRes] = await Promise.all([
+            fetch('/drivers'),
+            fetch('/rides')
+          ]);
+          const driversData = await driversRes.json();
+          const ridesData = await ridesRes.json();
+
+          const driversList = document.getElementById('drivers-list');
+          driversList.innerHTML = driversData.drivers.map(driver => `<li>${driver.name} — ${driver.vehicle} (⭐ ${driver.rating})</li>`).join('');
+
+          const ridesList = document.getElementById('rides-list');
+          ridesList.innerHTML = ridesData.rides.map(ride => `<li>${ride.customer}: ${ride.pickup} → ${ride.dropoff} [${ride.status}]</li>`).join('');
+        } catch (error) {
+          document.getElementById('drivers-list').innerHTML = '<li>Unable to load data</li>';
+          document.getElementById('rides-list').innerHTML = '<li>Unable to load data</li>';
+        }
+      }
+
+      loadData();
+    </script>
+  </body>
+</html>

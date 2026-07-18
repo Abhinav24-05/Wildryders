@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wildryde
+  labels:
+    app: wildryde
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wildryde
+  template:
+    metadata:
+      labels:
+        app: wildryde
+    spec:
+      containers:
+        - name: wildryde
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/wildryde-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wildryde-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: wildryde
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
