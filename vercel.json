@@ -4,6 +4,7 @@
     { "src": "api/*.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/", "dest": "/index.html" },
     { "src": "/drivers", "dest": "/api/drivers" },
     { "src": "/rides", "dest": "/api/rides" },
     { "src": "/health", "dest": "/api/health" }
