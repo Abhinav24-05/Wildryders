@@ -39,38 +39,56 @@ function readBody(req) {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://127.0.0.1');
+  const pathName = url.pathname;
 
-  if (req.method === 'GET' && url.pathname === '/health') {
-    return sendJson(res, 200, { status: 'ok', service: 'wildryde', uptime: process.uptime().toFixed(2) });
+  const handleDrivers = () => sendJson(res, 200, { drivers });
+  const handleRides = () => sendJson(res, 200, { rides });
+  const handleHealth = () => sendJson(res, 200, { status: 'ok', service: 'wildryde', uptime: process.uptime().toFixed(2) });
+
+  if (pathName === '/api/drivers' && req.method === 'GET') {
+    return handleDrivers();
   }
 
-  if (req.method === 'GET' && url.pathname === '/drivers') {
-    return sendJson(res, 200, { drivers });
+  if (pathName === '/api/health' && req.method === 'GET') {
+    return handleHealth();
   }
 
-  if (req.method === 'GET' && url.pathname === '/rides') {
-    return sendJson(res, 200, { rides });
-  }
-
-  if (req.method === 'POST' && url.pathname === '/rides') {
-    try {
-      const payload = await readBody(req);
-      const ride = {
-        id: Date.now(),
-        customer: payload.customer || 'Guest',
-        pickup: payload.pickup || 'Unknown',
-        dropoff: payload.dropoff || 'Unknown',
-        status: 'requested'
-      };
-      rides.unshift(ride);
-      return sendJson(res, 201, { ride });
-    } catch (error) {
-      return sendJson(res, 400, { error: error.message });
+  if (pathName === '/api/rides') {
+    if (req.method === 'GET') {
+      return handleRides();
+    }
+    if (req.method === 'POST') {
+      try {
+        const payload = await readBody(req);
+        const ride = {
+          id: Date.now(),
+          customer: payload.customer || 'Guest',
+          pickup: payload.pickup || 'Unknown',
+          dropoff: payload.dropoff || 'Unknown',
+          status: 'requested'
+        };
+        rides.unshift(ride);
+        return sendJson(res, 201, { ride });
+      } catch (error) {
+        return sendJson(res, 400, { error: error.message });
+      }
     }
   }
 
+  if (pathName === '/drivers' && req.method === 'GET') {
+    return handleDrivers();
+  }
+
+  if (pathName === '/rides' && req.method === 'GET') {
+    return handleRides();
+  }
+
+  if (pathName === '/health' && req.method === 'GET') {
+    return handleHealth();
+  }
+
   if (req.method === 'GET') {
-    const requestedPath = url.pathname === '/' ? '/index.html' : url.pathname;
+    const requestedPath = pathName === '/' ? '/index.html' : pathName;
     const filePath = path.join(publicDir, requestedPath);
 
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {

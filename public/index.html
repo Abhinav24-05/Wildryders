@@ -58,8 +58,8 @@
       async function loadData() {
         try {
           const [driversRes, ridesRes] = await Promise.all([
-            fetch('/drivers'),
-            fetch('/rides')
+            fetch('/api/drivers'),
+            fetch('/api/rides')
           ]);
           const driversData = await driversRes.json();
           const ridesData = await ridesRes.json();
